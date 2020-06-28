@@ -1,83 +1,107 @@
-console.log('in js');
-
-$(document).ready(onReady);
-
-function onReady() {
-    console.log('in onReady');
-    $("#btn-add").on('click', ifAdding);
-    $("#btn-subtract").on('click', ifSubtracting);
-    $("#btn-multiply").on('click', ifMultiplying);
-    $("#btn-divide").on('click', ifDividing);
-
-    $("#btn-equals").on('click', handleClick);
-    getCalculations(); //shows what has been calculated so far
-}
-// initial operator set to empty string, to change 
-//with corresponding function when button is clicked
+console.log('JS');
 let operator = '';
-//functions to handle different operators clicked
-function ifAdding() { ///may not be the most elegant, but with multiple buttons can't think of doing a loop
-    console.log('ifAdding clicked');
+let history = [];
+
+$(document).ready(readyNow);
+
+function readyNow() {
+    console.log('jQuery is ready!');
+    $('#btn-add').on('click', addEvent);
+    $('#btn-subtract').on('click', subEvent);
+    $('#btn-multiply').on('click', multiEvent);
+    $('#btn-divide').on('click', divideEvent);
+    $('#btn-equals').on('click', handleClick);
+    getHistory();
+    $('#btn-clear').on('click', clearEvent);
+}
+
+
+function addEvent() {
     operator = '+';
 }
-function ifSubtracting() {
-    console.log('ifSubtracting clicked');
+
+function subEvent() {
     operator = '-';
 }
-function ifMultiplying() {
-    console.log('ifMultiplying clicked');
-    operator = 'x';
+
+function multiEvent() {
+    operator = '*';
 }
-function ifDividing() {
-    console.log('ifDividing clicked');
+
+function divideEvent () {
     operator = '/';
 }
-
-
-
-//calculate function called on button click
+//Event that creates object and sends POST request to server
 function handleClick() {
-    console.log('calculating clicked!'); //log the addition
-    const objectToSend = {
-        number1: $('#firstNumberIn').val(),
+    event.preventDefault();
+    let calculatedObject = {
+        firstNumber: $('#firstNumber').val(),
         mathOperation: operator,
-        number2: $('#secondNumberIn').val()
+        secondNumber: $('#secondNumber').val()
     }
-    console.log('sending:', objectToSend);
+    //POST request
     $.ajax({
-        type: 'POST',
-        url: '/calculations',
-        data: objectToSend
-    }).then(function (response) {
-        console.log('Added succesful:', response);
-        getCalculations(); //We want to see what was added
-    }).catch(function (error) {
-        alert('Sorry, bad things happened!');
-        console.log('Error on POST', error);
+        method: 'POST',
+        url: '/calculate',
+        data: calculatedObject
+    }).then(function(response) {
+        console.log('Added object', response);
+        getResult();
+    }).catch(function(error) {
+        console.log('Error is', error);
     })
+}
 
-} //end handleClick
-
-function getCalculations() {
+//GET result from server
+function getResult() {
     $.ajax({
-        type: 'GET',
-        url: '/calculations',
-    }).then(function (response) {
-        console.log('Got calculations', response);
-        //append numbers to dom ///figure out how to add corresponding buttons below
-        let el = $('#resultsField');
-        el.empty();
-        for (let i = 0; i < response.length; i++) {
-            el.append( //num1 ${button that was pushed} num2 = {result}
-                `<p>${response[i].number1} ${response[i].mathOperation}  
-            ${response[i].number2} = </p>`
-            )
-        }
-        //empty inputs
-        $('#firstNumberIn').val('')
-        $('#secondNumberIn').val('')
-    }).catch(function (error) {
-        alert('Sorry, bad things happened!');
-        console.log('Error on GET', error);
+        method: 'GET',
+        url: '/result'
+    }).then(function(response) {
+        let result = 0;
+        console.log('The response is', response);
+        result = response.result;
+        resultToDom(response);
+    }).catch(function(error) {
+        console.log('The error is', error);
     })
+}
+
+//Append result and new expression to the DOM
+function resultToDom(response) {
+    let el = $('#recentResult')
+    el.empty();
+    el.append(`
+    <h3>Result: ${response.result}</h3>
+    `);
+    $('#resultHistory').append(`
+    <p>${response.firstNumber} ${response.mathOperation} ${response.secondNumber} = ${response.result}</p>
+    `);
+}
+
+//GET calculation history from server when the page loads
+function getHistory() {
+    $.ajax({
+        method: 'GET',
+        url: '/history'
+    }).then(function(response) {
+        history = response;
+        console.log('The response is', response);
+        appendHistory(history);
+    }).catch(function(error) {
+        console.log('The error is', error);
+    })
+}
+//Append calculation history to the DOM on page load
+function appendHistory(history) {
+    for(let expression of history) {
+        $('#resultHistory').append(`
+    <p>${expression.firstNumber} ${expression.mathOperation} ${expression.secondNumber} = ${expression.result}</p>
+    `);
+    }
+}
+
+function clearEvent() {
+    $('#firstNumber').val('');
+    $('#secondNumber').val('');
 }

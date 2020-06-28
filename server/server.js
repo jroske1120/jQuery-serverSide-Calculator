@@ -1,49 +1,50 @@
-let express = require('express');
-let bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
-
-//Uses
-app.use(express.static('server/public'));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-//Globals
 const port = 5000;
+let calcHistory = [];
+let result = 0;
 
-//Server up
+//Serve static files
+app.use(express.static('server/public'));
+
+app.use(bodyParser.urlencoded({extended:true}));
+//Request to port
 app.listen(port, () => {
-    console.log('Server is listening on port: ', port);
+    console.log('Server is running on port:', port);    
 })
-
-//store calculations on server
-let calculations = [];
-
-//get calculation objects history
-app.get('/calculations', (req, res) => {
-    res.send(calculations);
-})
-
-//Add calculation to the array
-app.post('/calculations', (req, res) => {
-    console.log('Got new calculation', req.body);
-    calculations.push(req.body);
+//POST request
+app.post('/calculate', (req, res) => {
+    result = calculateNum(Number(req.body.firstNumber), req.body.mathOperation, Number(req.body.secondNumber));
+    console.log('The result is', result);
+    req.body.result = result;
+    calcHistory.push(req.body)
+    console.log(calcHistory);
     res.sendStatus(200);
 })
 
-//initial result set to 0
-let result = 0;
+//GET request for calculation result
+app.get('/result', (req, res) => {
+    let newExpression = calcHistory[calcHistory.length - 1];
+    console.log('The new expression is', newExpression);
+    res.send(newExpression);
+})
 
-//POST that does calculation
-function calculateNumbers(firstNumber, mathOperation, secondNumber) {
-    if (mathOperation === '+') {
-        return firstNumber + secondNumber;
-    } else if (mathOperation === '-') {
-        return firstNumber - secondNumber;
-    } else if (mathOperation === '*') {
-        return firstNumber * secondNumber;
-    } else if (mathOperation === '/') {
-        return firstNumber / secondNumber;
-    } else {
-        return 'Something went horribly wrong. Cannot do math';
+//GET request for calculation history
+app.get('/history', (req, res) => {
+    res.send(calcHistory);
+})
+
+//Function to calculate data from POST request
+function calculateNum(firstNumber, operator, secondNumber) {
+    if(operator === '+') {
+        result = (firstNumber + secondNumber).toFixed(1);
+    } else if(operator === '-') {
+        result = (firstNumber - secondNumber).toFixed(1);
+    } else if(operator === '*') {
+        result = (firstNumber * secondNumber).toFixed(1);
+    } else if(operator === '/') {
+        result = (firstNumber / secondNumber).toFixed(1);
     }
+    return result;
 }
