@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,21 +8,25 @@
     <script src="vendors/jquery-3.5.1.min.js"></script>
     <script src="scripts/client.js"></script>
 </head>
+
 <body>
     <h1>Server Side Calculator</h1>
     <form>
-        <input id="firstNumber" type="number" required>
-        
+        <input id="firstNumber" type="number" placeholder="First Number" required>
+
         <button id="btn-add">+</button>
         <button id="btn-subtract">-</button>
         <button id="btn-multiply">*</button>
         <button id="btn-divide">/</button>
-        
-        <input id="secondNumber" type="number" required>
-        
+
+        <input id="secondNumber" type="number" placeholder="Second Number" required>
+
         <button id="btn-equals">=</button>
         <button id="btn-clear">C</button>
     </form>
+    <hr>
+    <button id="btn-delete">Delete History</button>
+
     <div id="recentResult"></div>
     <!-- Most recent calculation appears here -->
     <div id="resultHistory"></div>

@@ -8,14 +8,16 @@ function readyNow() {
     console.log('jQuery is ready!');
     //buttons lead to respective click events
     $('#btn-add').on('click', addEvent);
-    $('#btn-subtract').on('click', subEvent);
-    $('#btn-multiply').on('click', multiEvent);
+    $('#btn-subtract').on('click', subtractEvent);
+    $('#btn-multiply').on('click', multiplyEvent);
     $('#btn-divide').on('click', divideEvent);
     $('#btn-equals').on('click', handleClick);
     //call function for calculation history that will
     //load even if page is reloaded (not server)
     getHistory();
     $('#btn-clear').on('click', clearEvent);
+    $('#btn-delete').on('click', clearHistory);
+
 }
 
 //functions that change operator
@@ -23,11 +25,11 @@ function addEvent() {
     operator = '+';
 }
 
-function subEvent() {
+function subtractEvent() {
     operator = '-';
 }
 
-function multiEvent() {
+function multiplyEvent() {
     operator = '*';
 }
 
@@ -52,6 +54,8 @@ function handleClick() {
         console.log(' POST /calculate Added object', response);
         //call getResult function to GET calculation
         getResult();
+        $('#firstNumber').val('');
+        $('#secondNumber').val('');
     }).catch(function (error) {
         console.log('Error is', error);
     })
@@ -99,6 +103,19 @@ function getHistory() {
         console.log('The response is', response);
         //append the calculations history
         appendHistory(response);
+    }).catch(function (error) {
+        console.log('The error is', error);
+    })
+}
+
+//Delete request that the server clears and reloads the page
+function clearHistory() {
+    $.ajax({
+        method: 'DELETE',
+        url: '/history'
+    }).then(function (response) {
+        console.log(' in delete history, The response is', response);
+        location.reload();
     }).catch(function (error) {
         console.log('The error is', error);
     })
