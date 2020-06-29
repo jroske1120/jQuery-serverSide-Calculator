@@ -1,0 +1,9 @@
+body {
+text-align: center; 
+}
+.inputField{
+    width: 100px;
+}
+input {
+    margin: 5px;
+}

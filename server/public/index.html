@@ -7,23 +7,26 @@
     <title>Server Calculator</title>
     <script src="vendors/jquery-3.5.1.min.js"></script>
     <script src="scripts/client.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <h1>Server Side Calculator</h1>
     <form>
-        <input id="firstNumber" type="number" step="0.01" placeholder="First Number" required>
+        <div class="form-group">
+        <input id="firstNumber" style="width: 150px;" type="number" step="0.01" placeholder="Number" required>
+<br>
+        <button id="btn-add" class="btn btn-success">+</button>
+        <button id="btn-subtract" class="btn btn-success">-</button>
+        <button id="btn-multiply" class="btn btn-success">x</button>
+        <button id="btn-divide" class="btn btn-success">&#247;</button>
+<br>
+        <input id="secondNumber" class="inputField" style="width: 80px;" type="number" step="0.01" placeholder="Number" required>
 
-        <button id="btn-add">+</button>
-        <button id="btn-subtract">-</button>
-        <button id="btn-multiply">*</button>
-        <button id="btn-divide">/</button>
-
-        <input id="secondNumber" type="number" step="0.01" placeholder="Second Number" required>
-
-        <button id="btn-equals">=</button>
-        <button id="btn-clear">C</button>
-    </form>
+        <button id="btn-equals" class="btn btn-success btn-sm">=</button>
+        <button id="btn-clear" class="btn btn-success btn-sm">C</button>
+    </form></div>
     <hr>
     <button id="btn-delete">Delete History</button>
 
